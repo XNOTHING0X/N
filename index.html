@@ -405,8 +405,10 @@
                 }
             })
             .catch(error => {
-                console.error('Error closing console:', error);
-                showNotification('Failed to close console', 'error');
+                    showNotification('Console is closing...', 'info');
+                    setTimeout(() => {
+                        window.close(); 
+                    }, 1000);
             });
         }
 
