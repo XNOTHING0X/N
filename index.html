@@ -3,6 +3,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>N</title>
+	        <link rel="icon" href="https://avatars.githubusercontent.com/u/170884425?s=400&u=3eedec18a968ae399b77b9e7e577ce4703676414&v=4" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         html, body {
@@ -74,6 +75,47 @@
             display: inline-block;
             white-space: nowrap;
             text-align: center;
+        }
+
+        /* Notification Styles */
+        #notification {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background-color: #333333;
+            color: #ffffff;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            opacity: 0;
+            transition: opacity 0.5s ease, transform 0.3s ease;
+            z-index: 10000;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transform: translateY(20px); /* Starts from below */
+            display: none;
+        }
+
+        #notification.show {
+            opacity: 1;
+            transform: translateY(0); /* Moves up into place */
+        }
+
+        #notification.success {
+            background-color: #28a745; /* Green for success */
+        }
+
+        #notification.error {
+            background-color: #dc3545; /* Red for errors */
+        }
+
+        #notification.info {
+            background-color: #17a2b8; /* Blue for info */
+        }
+
+        #notification .message {
+            font-size: 14px;
+            line-height: 1.5;
         }
 
         .close-btn {
@@ -150,7 +192,7 @@
             gap: 10px;
         }
 
-        .execute-btn, .clear-btn {
+        .execute-btn, .clear-btn, .close-console-btn {
             background-color: #ffffff; /* Białe tło domyślnie */
             color: #000000; /* Czarny tekst domyślnie */
             border: none;
@@ -166,12 +208,12 @@
             /* Żaden specjalny styl dla Wyczyść, zachowuje białe tło i czarny tekst */
         }
 
-        .execute-btn:hover, .clear-btn:hover {
+        .execute-btn:hover, .clear-btn:hover, .close-console-btn:hover {
             background-color: #ffffff; /* Białe tło przy hover */
             color: #000000; /* Czarny tekst przy hover */
         }
 
-        .execute-btn:active, .clear-btn:active {
+        .execute-btn:active, .clear-btn:active, .close-console-btn:active {
             background-color: #e0e0e0; /* Lekko szare tło przy kliknięciu */
             color: #000000;
         }
@@ -185,7 +227,8 @@
     <div id="editor-container">
         <div id="monaco-editor"></div>
         <div id="controls">
-            <button class="clear-btn" onclick="clearText()">clear</button>
+            <button class="close-console-btn" onclick="closeConsole()">Close N</button>
+            <button class="clear-btn" onclick="clearText()">Clear</button>
             <button class="execute-btn" onclick="executeScript()">Execute</button>
         </div>
     </div>
@@ -348,6 +391,25 @@
             }
         }
 
+        function closeConsole() {
+            fetch('/close', {
+                method: 'GET'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "closing") {
+                    showNotification('Console is closing...', 'info');
+                    setTimeout(() => {
+                        window.close(); 
+                    }, 1000);
+                }
+            })
+            .catch(error => {
+                console.error('Error closing console:', error);
+                showNotification('Failed to close console', 'error');
+            });
+        }
+
         require(['vs/editor/editor.main'], function() {
             try {
                 monaco.languages.setMonarchTokensProvider('lua', {
@@ -423,7 +485,7 @@
                     } catch (error) {
                         console.error('Error saving to localStorage:', error);
                     }
-                }, 50); // Auto-save co 50ms
+                }, 0); // Auto-save co 50ms
 
                 const savedTabs = JSON.parse(localStorage.getItem('savedTabs') || '[]');
                 const savedActiveTabId = localStorage.getItem('activeTabId');
@@ -446,30 +508,72 @@
             }
         });
 
-        // Funkcja execute (symulacja)
-function executeScript() {
-            const script = editor.getValue();
-            fetch('/execute', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: 'script=' + encodeURIComponent(script)
-            })
-            .then(response => response.json())
-            .then(data => console.log(data))
-            .catch(error => console.error('Error:', error));
-        }
+let notificationTimeout = null; // Variable to hold the timeout for hiding the notification
 
-        // Funkcja clear (tylko tekst w aktywnym tabie)
-        function clearText() {
-            if (activeTabId && editor) {
-                editor.setValue('');
-                const tabData = tabs.find(t => t.id === activeTabId);
-                if (tabData) tabData.content = '';
-                localStorage.setItem('savedTabs', JSON.stringify(tabs));
-            }
-        }
+// Function to show notification with type (success, error, info)
+function showNotification(message, type = 'info') {
+    const notification = document.getElementById('notification');
+
+    // Clear any existing timeout and old notifications
+    if (notificationTimeout) {
+        clearTimeout(notificationTimeout);
+    }
+
+    // Clear any existing classes and add new one for the type
+    notification.classList.remove('success', 'error', 'info');
+    notification.classList.add(type);
+
+    notification.textContent = message;
+    notification.style.display = 'block'; // Make notification visible
+
+    // Trigger the "show" animation
+    setTimeout(() => {
+        notification.classList.add('show'); // Add "show" class after a small delay for smooth animation
+    }, 10);
+
+    // Hide notification after 3 seconds (after animation)
+    notificationTimeout = setTimeout(() => {
+        notification.classList.remove('show'); // Remove the "show" class to trigger hide animation
+        setTimeout(() => {
+            notification.style.display = 'none'; // Finally hide the notification after the animation ends
+        }, 300); // Wait for the hide animation to finish
+    }, 3000); // The notification stays visible for 3 seconds
+}
+
+// Example usage in executeScript and clearText
+
+// Updated executeScript function with success notification
+function executeScript() {
+    const script = editor.getValue();
+    fetch('/execute', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'script=' + encodeURIComponent(script)
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+        showNotification('Script Executed Successfully', 'success');
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Error Executing Script', 'error');
+    });
+}
+
+// Updated clearText function with success notification
+function clearText() {
+    if (activeTabId && editor) {
+        editor.setValue('');
+        const tabData = tabs.find(t => t.id === activeTabId);
+        if (tabData) tabData.content = '';
+        localStorage.setItem('savedTabs', JSON.stringify(tabs));
+        showNotification('Text Cleared', 'success');
+    }
+}
     </script>
 </body>
+<div id="notification"></div>
 </html>
