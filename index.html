@@ -227,7 +227,7 @@
     <div id="editor-container">
         <div id="monaco-editor"></div>
         <div id="controls">
-            <button class="close-console-btn" onclick="closeConsole()">Close N</button>
+            <button class="close-console-btn" onclick="closeConsole()">Close Executor</button>
             <button class="clear-btn" onclick="clearText()">Clear</button>
             <button class="execute-btn" onclick="executeScript()">Execute</button>
         </div>
@@ -398,14 +398,14 @@
             .then(response => response.json())
             .then(data => {
                 if (data.status === "closing") {
-                    showNotification('Console is closing...', 'info');
+                    showNotification('Executor is closing...', 'info');
                     setTimeout(() => {
                         window.close(); 
                     }, 1000);
                 }
             })
             .catch(error => {
-                    showNotification('Console is closing...', 'info');
+                    showNotification('Executor is closing...', 'info');
                     setTimeout(() => {
                         window.close(); 
                     }, 1000);
