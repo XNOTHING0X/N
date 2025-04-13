@@ -600,7 +600,7 @@ function clearText() {
 }
 function attachExecutor() {
     fetch('/attachHUB', {
-        method: 'POST'
+        method: 'POST' // ← to MUSI być POST
     })
     .then(response => response.json())
     .then(data => {
@@ -611,6 +611,7 @@ function attachExecutor() {
         console.error('Attach error:', error);
     });
 }
+
 
 
     </script>
