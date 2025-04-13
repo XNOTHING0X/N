@@ -598,9 +598,9 @@ function clearText() {
         showNotification('Text Cleared', 'success');
     }
 }
-      function attachExecutor() {
+function attachExecutor() {
     fetch('/attachHUB', {
-        method: 'GET'
+        method: 'POST'
     })
     .then(response => response.json())
     .then(data => {
@@ -611,6 +611,7 @@ function clearText() {
         console.error('Attach error:', error);
     });
 }
+
 
     </script>
 </body>
