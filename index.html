@@ -217,6 +217,28 @@
             background-color: #e0e0e0; /* Lekko szare tło przy kliknięciu */
             color: #000000;
         }
+      .attach-btn {
+    background-color: #ffffff;
+    color: #000000;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.attach-btn:hover {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+.attach-btn:active {
+    background-color: #e0e0e0;
+    color: #000000;
+}
+
     </style>
 </head>
 <body>
@@ -227,6 +249,7 @@
     <div id="editor-container">
         <div id="monaco-editor"></div>
         <div id="controls">
+          <button class="attach-btn" onclick="attachExecutor()">Attach</button>
             <button class="close-console-btn" onclick="closeConsole()">Close Executor</button>
             <button class="clear-btn" onclick="clearText()">Clear</button>
             <button class="execute-btn" onclick="executeScript()">Execute</button>
@@ -575,6 +598,20 @@ function clearText() {
         showNotification('Text Cleared', 'success');
     }
 }
+      function attachExecutor() {
+    fetch('/attach', {
+        method: 'GET'
+    })
+    .then(response => response.json())
+    .then(data => {
+        showNotification('Attached successfully!', 'success');
+    })
+    .catch(error => {
+        showNotification('Failed to attach.', 'error');
+        console.error('Attach error:', error);
+    });
+}
+
     </script>
 </body>
 <div id="notification"></div>
