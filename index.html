@@ -1,10 +1,11 @@
-
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> </title>
-	        <link rel="icon" href="https://avatars.githubusercontent.com/u/170884425?s=400&u=3eedec18a968ae399b77b9e7e577ce4703676414&v=4" type="image/x-icon">
+    <title>S</title>
+    <link rel="icon" href="https://raw.githubusercontent.com/XNOTHING0X/S---S/refs/heads/main/S-S.ico" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.fluenticon.com/icon.min.css">
     <style>
         html, body {
             margin: 0;
@@ -42,11 +43,15 @@
             border-bottom: 1px solid #ffffff;
             overflow-x: auto;
             white-space: nowrap;
+            scrollbar-width: none;
+        }
+
+        .tab-header::-webkit-scrollbar {
+            display: none;
         }
 
         .tab {
             display: flex;
-            justify-content: center;
             align-items: center;
             padding: 2px 10px;
             margin: 0 5px;
@@ -57,6 +62,7 @@
             font-size: 12px;
             height: 24px;
             transition: background-color 0.3s ease;
+            position: relative;
         }
 
         .tab:hover {
@@ -75,71 +81,72 @@
             display: inline-block;
             white-space: nowrap;
             text-align: center;
+            padding-right: 20px;
         }
 
-        /* Notification Styles */
-        #notification {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            background-color: #333333;
-            color: #ffffff;
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 500;
-            opacity: 0;
-            transition: opacity 0.5s ease, transform 0.3s ease;
-            z-index: 10000;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            transform: translateY(20px); /* Starts from below */
-            display: none;
-        }
-
-        #notification.show {
-            opacity: 1;
-            transform: translateY(0); /* Moves up into place */
-        }
-
-        #notification.success {
-            background-color: #28a745; /* Green for success */
-        }
-
-        #notification.error {
-            background-color: #dc3545; /* Red for errors */
-        }
-
-        #notification.info {
-            background-color: #17a2b8; /* Blue for info */
-        }
-
-        #notification .message {
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
-        .close-btn {
+        .delete-btn {
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-left: 8px;
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
             background: none;
             border: none;
             color: #ffffff;
             cursor: pointer;
-            font-size: 14px;
-            transition: all 0.2s;
+            font-size: 12px;
             padding: 0;
-            width: 16px;
-            height: 16px;
-            line-height: 16px;
+            width: 14px;
+            height: 14px;
             border-radius: 50%;
         }
 
-        .close-btn:hover {
+        .delete-btn:hover {
             color: #ff4444;
             background-color: rgba(255, 68, 68, 0.2);
-            transform: scale(1.1);
+        }
+
+        .delete-btn svg {
+            width: 10px;
+            height: 10px;
+        }
+
+        #notification {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background-color: #333333;
+            color: #ffffff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 400;
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.2s ease;
+            z-index: 10000;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transform: translateY(10px);
+            display: none;
+            max-width: 200px;
+        }
+
+        #notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #notification.success {
+            background-color: #28a745;
+        }
+
+        #notification.error {
+            background-color: #dc3545;
+        }
+
+        #notification.info {
+            background-color: #17a2b8;
         }
 
         .add-tab {
@@ -162,7 +169,6 @@
             position: relative;
             z-index: 1;
             outline: none;
-            transition: background-color 0.3s ease;
         }
 
         .add-tab:hover {
@@ -170,12 +176,22 @@
             border: 1px solid #cccccc;
         }
 
+        .add-tab svg {
+            width: 16px;
+            height: 16px;
+            fill: none;
+            stroke: #ffffff;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
         #editor-container {
-            flex-grow: 1;
-            height: calc(100vh - 70px);
+            height: calc(100vh - 38px);
             background-color: #000000;
             display: flex;
             flex-direction: column;
+            position: relative;
         }
 
         #monaco-editor {
@@ -183,62 +199,28 @@
             min-height: 0;
         }
 
-        #controls {
-            padding: 10px;
-            background-color: #000000;
-            border-top: 1px solid #ffffff;
-            display: flex;
-            justify-content: flex-end; /* Wyrównanie do prawej strony */
-            gap: 10px;
-        }
-
-        .execute-btn, .clear-btn, .close-console-btn {
-            background-color: #ffffff; /* Białe tło domyślnie */
-            color: #000000; /* Czarny tekst domyślnie */
-            border: none;
-            padding: 8px 16px;
-            cursor: pointer;
+        #context-menu {
+            position: absolute;
+            background-color: #2d2d2d;
+            border: 1px solid #444;
             border-radius: 4px;
-            transition: background-color 0.3s, color 0.3s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            z-index: 10001;
             font-family: 'Poppins', sans-serif;
             font-size: 14px;
+            color: #ffffff;
+            min-width: 150px;
         }
 
-        .clear-btn {
-            /* Żaden specjalny styl dla Wyczyść, zachowuje białe tło i czarny tekst */
+        .context-menu-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
         }
 
-        .execute-btn:hover, .clear-btn:hover, .close-console-btn:hover {
-            background-color: #ffffff; /* Białe tło przy hover */
-            color: #000000; /* Czarny tekst przy hover */
+        .context-menu-item:hover {
+            background-color: #3a3a3a;
         }
-
-        .execute-btn:active, .clear-btn:active, .close-console-btn:active {
-            background-color: #e0e0e0; /* Lekko szare tło przy kliknięciu */
-            color: #000000;
-        }
-      .attach-btn {
-    background-color: #ffffff;
-    color: #000000;
-    border: none;
-    padding: 8px 16px;
-    cursor: pointer;
-    border-radius: 4px;
-    font-family: 'Poppins', sans-serif;
-    font-size: 14px;
-    transition: background-color 0.3s, color 0.3s;
-}
-
-.attach-btn:hover {
-    background-color: #ffffff;
-    color: #000000;
-}
-
-.attach-btn:active {
-    background-color: #e0e0e0;
-    color: #000000;
-}
-
     </style>
 </head>
 <body>
@@ -248,12 +230,12 @@
     <div class="tab-header" id="tabHeader"></div>
     <div id="editor-container">
         <div id="monaco-editor"></div>
-        <div id="controls">
-          <button class="attach-btn" onclick="attachExecutor()">Attach</button>
-            <button class="close-console-btn" onclick="closeConsole()">Close Executor</button>
-            <button class="clear-btn" onclick="clearText()">Clear</button>
-            <button class="execute-btn" onclick="executeScript()">Execute</button>
-        </div>
+    </div>
+    <div id="notification"></div>
+    <div id="context-menu" style="display: none;">
+        <div class="context-menu-item" onclick="executeScript()">Execute</div>
+        <div class="context-menu-item" onclick="clearText()">Clear</div>
+        <div class="context-menu-item" onclick="attachScript()">Attach</div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.33.0/min/vs/loader.js"></script>
@@ -268,7 +250,7 @@
         function resizeEditor() {
             const editorContainer = document.getElementById('editor-container');
             if (editorContainer && editor) {
-                editorContainer.style.height = `${window.innerHeight - 70}px`;
+                editorContainer.style.height = `${window.innerHeight - 38}px`;
                 editor.layout();
             }
         }
@@ -277,15 +259,19 @@
         window.addEventListener('load', () => {
             setTimeout(() => {
                 const loadingScreen = document.getElementById('loading-screen');
-                loadingScreen.classList.add('fade-out');
-                setTimeout(() => loadingScreen.style.display = 'none', 500);
+                if (loadingScreen) {
+                    loadingScreen.classList.add('fade-out');
+                    setTimeout(() => loadingScreen.style.display = 'none', 500);
+                }
             }, 1000);
 
             const tabHeader = document.getElementById('tabHeader');
-            tabHeader.addEventListener('wheel', (e) => {
-                e.preventPropagation();
-                tabHeader.scrollLeft += e.deltaY * 0.5;
-            });
+            if (tabHeader) {
+                tabHeader.addEventListener('wheel', (e) => {
+                    e.preventDefault();
+                    tabHeader.scrollLeft += e.deltaY > 0 ? 50 : -50;
+                });
+            }
 
             resizeEditor();
         });
@@ -301,14 +287,16 @@
                 const tabId = `tab-${newNumber}`;
                 const tabName = name || `script${newNumber}.lua`;
 
-                if (tabs.some(tab => tab.name === tabName)) {
-                    console.warn(`Tab name ${tabName} already exists, generating a new one.`);
-                    return createTab();
+                let finalName = tabName;
+                let counter = 1;
+                while (tabs.some(tab => tab.name === finalName)) {
+                    finalName = `script${newNumber}-${counter}.lua`;
+                    counter++;
                 }
 
                 const tabData = { 
                     id: tabId, 
-                    name: tabName, 
+                    name: finalName, 
                     content: content 
                 };
                 
@@ -318,11 +306,14 @@
                 selectTab(tabId);
             } catch (error) {
                 console.error('Error creating tab:', error);
+                showNotification('Failed to create tab', 'error');
             }
         }
 
         function renderTabs() {
             const tabHeader = document.getElementById('tabHeader');
+            if (!tabHeader) return;
+
             tabHeader.innerHTML = '';
 
             tabs.forEach(tab => {
@@ -333,19 +324,23 @@
                 const tabText = document.createElement('span');
                 tabText.textContent = tab.name;
 
-                const closeBtn = document.createElement('button');
-                closeBtn.className = 'close-btn';
-                closeBtn.innerHTML = '×';
-                closeBtn.onclick = (e) => {
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-btn';
+                deleteBtn.innerHTML = `
+                    <svg viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M2.146 2.146a.5.5 0 0 1 .708 0L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854a.5.5 0 0 1 0-.708z"/>
+                    </svg>
+                `;
+                deleteBtn.onclick = (e) => {
                     e.stopPropagation();
                     closeTab(tab.id);
                 };
 
                 tabDiv.appendChild(tabText);
-                tabDiv.appendChild(closeBtn);
+                tabDiv.appendChild(deleteBtn);
                 
                 tabDiv.onclick = (e) => {
-                    if (e.target !== closeBtn) {
+                    if (e.target !== deleteBtn && !deleteBtn.contains(e.target)) {
                         selectTab(tab.id);
                     }
                 };
@@ -355,7 +350,11 @@
 
             const addTabBtn = document.createElement('div');
             addTabBtn.className = 'add-tab';
-            addTabBtn.innerHTML = '+';
+            addTabBtn.innerHTML = `
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 5v14m-7-7h14"/>
+                </svg>
+            `;
             addTabBtn.onclick = () => createTab();
             tabHeader.appendChild(addTabBtn);
 
@@ -372,7 +371,7 @@
                 if (activeTabId && editor) {
                     const currentTab = tabs.find(t => t.id === activeTabId);
                     if (currentTab) {
-                        currentTab.content = editor.getValue();
+                        currentTab.content = editor.getValue() || '';
                     }
                 }
 
@@ -385,6 +384,7 @@
                 renderTabs();
             } catch (error) {
                 console.error('Error selecting tab:', error);
+                showNotification('Failed to select tab', 'error');
             }
         }
 
@@ -409,30 +409,21 @@
                 }
 
                 renderTabs();
+                saveTabs();
             } catch (error) {
                 console.error('Error closing tab:', error);
+                showNotification('Failed to close tab', 'error');
             }
         }
 
-        function closeConsole() {
-            fetch('/close', {
-                method: 'GET'
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === "closing") {
-                    showNotification('Executor is closing...', 'info');
-                    setTimeout(() => {
-                        window.close(); 
-                    }, 1000);
-                }
-            })
-            .catch(error => {
-                    showNotification('Executor is closing...', 'info');
-                    setTimeout(() => {
-                        window.close(); 
-                    }, 1000);
-            });
+        function saveTabs() {
+            try {
+                localStorage.setItem('savedTabs', JSON.stringify(tabs));
+                localStorage.setItem('activeTabId', activeTabId || '');
+            } catch (error) {
+                console.error('Error saving to localStorage:', error);
+                showNotification('Failed to save tabs', 'error');
+            }
         }
 
         require(['vs/editor/editor.main'], function() {
@@ -495,82 +486,90 @@
                     minimap: { enabled: false },
                     automaticLayout: true,
                     fontSize: 14,
-                    lineNumbers: 'on'
+                    lineNumbers: 'on',
+                    contextmenu: false // Disable default context menu
                 });
 
                 editor.onDidChangeModelContent(() => {
                     const tabData = tabs.find(t => t.id === activeTabId);
                     if (tabData) tabData.content = editor.getValue();
+                    saveTabs();
                 });
 
-                setInterval(() => {
-                    try {
-                        localStorage.setItem('savedTabs', JSON.stringify(tabs));
-                        localStorage.setItem('activeTabId', activeTabId);
-                    } catch (error) {
-                        console.error('Error saving to localStorage:', error);
-                    }
-                }, 0); // Auto-save co 50ms
+                try {
+                    const savedTabs = JSON.parse(localStorage.getItem('savedTabs') || '[]');
+                    const savedActiveTabId = localStorage.getItem('activeTabId');
 
-                const savedTabs = JSON.parse(localStorage.getItem('savedTabs') || '[]');
-                const savedActiveTabId = localStorage.getItem('activeTabId');
-
-                if (savedTabs.length > 0) {
-                    tabs = savedTabs;
-                    tabCount = tabs.length;
-                    renderTabs();
-                    if (savedActiveTabId && tabs.find(t => t.id === savedActiveTabId)) {
-                        selectTab(savedActiveTabId);
-                    } else if (tabs.length > 0) {
-                        selectTab(tabs[0].id);
+                    if (savedTabs.length > 0) {
+                        tabs = savedTabs;
+                        tabCount = tabs.length;
+                        renderTabs();
+                        if (savedActiveTabId && tabs.find(t => t.id === savedActiveTabId)) {
+                            selectTab(savedActiveTabId);
+                        } else if (tabs.length > 0) {
+                            selectTab(tabs[0].id);
+                        }
+                    } else {
+                        createTab('script1.lua', '-- NOTHING X HUB');
                     }
-                } else {
+                } catch (error) {
+                    console.error('Error loading saved tabs:', error);
                     createTab('script1.lua', '-- NOTHING X HUB');
                 }
 
                 resizeEditor();
+
+                // Add right-click event listener to show custom context menu
+                const editorContainer = document.getElementById('monaco-editor');
+                const contextMenu = document.getElementById('context-menu');
+
+                editorContainer.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    contextMenu.style.display = 'block';
+                    contextMenu.style.left = `${e.clientX}px`;
+                    contextMenu.style.top = `${e.clientY}px`;
+                });
+
+                // Hide context menu when clicking elsewhere
+                document.addEventListener('click', (e) => {
+                    if (!contextMenu.contains(e.target)) {
+                        contextMenu.style.display = 'none';
+                    }
+                });
+
             } catch (error) {
+                console.error('Error initializing editor:', error);
+                showNotification('Failed to initialize editor', 'error');
             }
         });
 
-let notificationTimeout = null; // Variable to hold the timeout for hiding the notification
+        let notificationTimeout = null;
 
-// Function to show notification with type (success, error, info)
-function showNotification(message, type = 'info') {
-    const notification = document.getElementById('notification');
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            if (!notification) return;
 
-    // Clear any existing timeout and old notifications
-    if (notificationTimeout) {
-        clearTimeout(notificationTimeout);
-    }
+            if (notificationTimeout) {
+                clearTimeout(notificationTimeout);
+            }
+            notification.classList.remove('success', 'error', 'info');
+            notification.classList.add(type);
+            notification.textContent = message;
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+            notificationTimeout = setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                }, 200);
+            }, 2000);
+        }
 
-    // Clear any existing classes and add new one for the type
-    notification.classList.remove('success', 'error', 'info');
-    notification.classList.add(type);
-
-    notification.textContent = message;
-    notification.style.display = 'block'; // Make notification visible
-
-    // Trigger the "show" animation
-    setTimeout(() => {
-        notification.classList.add('show'); // Add "show" class after a small delay for smooth animation
-    }, 10);
-
-    // Hide notification after 3 seconds (after animation)
-    notificationTimeout = setTimeout(() => {
-        notification.classList.remove('show'); // Remove the "show" class to trigger hide animation
-        setTimeout(() => {
-            notification.style.display = 'none'; // Finally hide the notification after the animation ends
-        }, 300); // Wait for the hide animation to finish
-    }, 3000); // The notification stays visible for 3 seconds
-}
-
-// Example usage in executeScript and clearText
-
-// Updated executeScript function with success notification
 function executeScript() {
     const script = editor.getValue();
-    fetch('/execute', {
+    fetch('/E', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -581,10 +580,12 @@ function executeScript() {
     .then(data => {
         console.log(data);
         showNotification('Script Executed Successfully', 'success');
+      document.getElementById('context-menu').style.display = 'none'; // Hide context menu
     })
     .catch(error => {
         console.error('Error:', error);
         showNotification('Error Executing Script', 'error');
+      document.getElementById('context-menu').style.display = 'none'; // Hide context menu
     });
 }
 
@@ -596,10 +597,11 @@ function clearText() {
         if (tabData) tabData.content = '';
         localStorage.setItem('savedTabs', JSON.stringify(tabs));
         showNotification('Text Cleared', 'success');
+      document.getElementById('context-menu').style.display = 'none'; // Hide context menu
     }
 }
 function attachExecutor() {
-    fetch('/attachHUB', {
+    fetch('/A', {
         method: 'POST' // ← to MUSI być POST
     })
     .then(response => response.json())
@@ -609,12 +611,9 @@ function attachExecutor() {
     .catch(error => {
         showNotification('Failed to attach.', 'error');
         console.error('Attach error:', error);
+      document.getElementById('context-menu').style.display = 'none'; // Hide context menu
     });
 }
-
-
-
     </script>
 </body>
-<div id="notification"></div>
 </html>
